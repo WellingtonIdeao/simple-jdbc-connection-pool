@@ -16,6 +16,7 @@ public class BasicConnectionPool implements ConnectionPool{
 
     private static int INITIAL_POOL_SIZE = 10;
     private static int MAX_POOL_SIZE = 15;
+    private static int MAX_TIMEOUT = 1;
 
     private BasicConnectionPool(String url, String user, String password, List<Connection> pool) {
        this.url = url;
@@ -46,6 +47,11 @@ public class BasicConnectionPool implements ConnectionPool{
             }
         }
         Connection connection = connectionPool.remove(connectionPool.size()-1);
+
+        if(!connection.isValid(MAX_TIMEOUT)) {
+           connection = createConnection(url, user, password);
+        }
+
         usedConnections.add(connection);
         return connection;
     }
